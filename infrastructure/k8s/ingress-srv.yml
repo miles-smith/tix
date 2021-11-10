@@ -9,4 +9,11 @@ spec:
   rules:
     - host: application.local
       http:
-        paths: []
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000

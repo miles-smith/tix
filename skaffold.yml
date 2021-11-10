@@ -9,4 +9,12 @@ deploy:
 build:
   local:
     push: false
-  artifacts: []
+  artifacts:
+    - image: elevenhotdogs/tix.auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
