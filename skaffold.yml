@@ -1,0 +1,12 @@
+apiVersion: skaffold/v2beta25
+kind: Config
+metadata:
+  name: tix
+deploy:
+  kubectl:
+    manifests:
+    - infrastructure/k8s/*
+build:
+  local:
+    push: false
+  artifacts: []
