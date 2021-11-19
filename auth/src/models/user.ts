@@ -1,4 +1,5 @@
 import { Model, Schema, HydratedDocument, model } from 'mongoose';
+import { Password } from '../utils/password';
 
 // Interface that defines a subset of the full document, which exposes e.g. only those
 // attributes that may be supplied by an end user.
@@ -30,6 +31,15 @@ const schema = new Schema<UserDocument, UserModel>({
 // -> `const user = new User({ email: 'user@example.com' })` will not!
 schema.static('build', (attributes: UserAttributes) => {
   return new User(attributes);
+});
+
+schema.pre('save', async function(done) {
+  if(this.isModified('password')) {
+    const cypherText = await Password.toHash(this.get('password'));
+    this.set('password', cypherText);
+  }
+
+  done();
 });
 
 const User = model<UserDocument, UserModel>('User', schema);
