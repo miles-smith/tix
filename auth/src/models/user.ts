@@ -24,6 +24,13 @@ const schema = new Schema<UserDocument, UserModel>({
     type: String,
     required: true
   },
+}, {
+  toJSON: {
+    transform(_doc, ret) {
+      delete ret.password;
+      return ret;
+    }
+  }
 });
 
 // Factory method ensures we get type checking on incoming args when instantiatng a new object.
