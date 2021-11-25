@@ -27,7 +27,9 @@ const schema = new Schema<UserDocument, UserModel>({
 }, {
   toJSON: {
     versionKey: false,
+    virtuals: true,
     transform(_doc, ret) {
+      delete ret._id;
       delete ret.password;
       return ret;
     }
