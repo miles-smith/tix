@@ -1,11 +1,13 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { RequestValidationError } from '../../errors/request-validation-error';
+import { BadRequestError } from '../../errors/bad-request-error';
+import { User } from '../../models/user';
 
 const router = express.Router();
 
 /**
-  TODO: Email uniqueness
+  TODO: Email confirmation
   TODO: Enumeration attack guard
 **/
 const emailValidator =
@@ -30,16 +32,26 @@ const validationChain = [
   passwordValidator
 ];
 
-router.post('/signup', validationChain, (req: Request, res: Response) => {
+router.post('/signup', validationChain, async (req: Request, res: Response) => {
   const validationErrors = validationResult(req);
 
   if(!validationErrors.isEmpty()) {
     throw new RequestValidationError(validationErrors.array());
   }
 
-  // const { email, password } = req.body;
+  const email = req.body.email.toLowerCase();
+  const password = req.body.password;
 
-  res.send({ message: 'Signed up successfully' });
+  if(await User.exists({ email })) {
+    throw new BadRequestError();
+  }
+
+  const user = User.build({ email, password });
+  await user.save();
+
+  res
+    .status(201)
+    .send(user);
 });
 
 export { router as registrationRouter };
