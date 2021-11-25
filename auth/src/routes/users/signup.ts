@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 import { RequestValidationError } from '../../errors/request-validation-error';
 import { BadRequestError } from '../../errors/bad-request-error';
 import { User } from '../../models/user';
@@ -48,6 +49,15 @@ router.post('/signup', validationChain, async (req: Request, res: Response) => {
 
   const user = User.build({ email, password });
   await user.save();
+
+  const token = jwt.sign({
+    id: user.id,
+    email: user.email
+  }, process.env.JWT_KEY!); // Hush TypeScript! We know JWT_KEY is present if the server started.
+
+  req.session = {
+    jwt: token,
+  };
 
   res
     .status(201)
