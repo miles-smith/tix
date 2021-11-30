@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
-import { RequestValidationError } from '../../errors/request-validation-error';
+import { validateRequest } from '../../middlewares/validate-request';
 import { BadRequestError } from '../../errors/bad-request-error';
 import { User } from '../../models/user';
 
@@ -33,13 +33,7 @@ const validationChain = [
   passwordValidator
 ];
 
-router.post('/signup', validationChain, async (req: Request, res: Response) => {
-  const validationErrors = validationResult(req);
-
-  if(!validationErrors.isEmpty()) {
-    throw new RequestValidationError(validationErrors.array());
-  }
-
+router.post('/signup', validationChain, validateRequest, async (req: Request, res: Response) => {
   const email = req.body.email.toLowerCase();
   const password = req.body.password;
 
