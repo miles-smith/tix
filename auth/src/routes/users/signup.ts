@@ -44,6 +44,7 @@ router.post('/signup', validationChain, validateRequest, async (req: Request, re
   const user = User.build({ email, password });
   await user.save();
 
+  // TODO: DRY up this code.
   const token = jwt.sign({
     id: user.id,
     email: user.email
