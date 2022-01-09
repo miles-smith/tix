@@ -1,16 +1,6 @@
 import request from 'supertest';
 import { app } from '../../../app';
 
-const createUser = async (email: String, password: String) => {
-  await request(app)
-    .post('/api/users/signup')
-    .send({
-      email: email,
-      password: password
-    })
-    .expect(201);
-}
-
 it('fails with an unknown email', async () => {
   await request(app)
     .post('/api/users/signin')
@@ -24,7 +14,7 @@ it('fails with an unknown email', async () => {
 it('fails with an incorrect password', async () => {
   const email = 'test.user@example.com';
 
-  await createUser(email, 'my-password');
+  await signUp(email, 'my-password');
 
   await request(app)
     .post('/api/users/signin')
@@ -39,7 +29,7 @@ it('succeeds with valid credentials', async () => {
   const email  = 'test.user@example.com';
   const passwd = 'my-password';
 
-  await createUser(email, passwd);
+  await signUp(email, passwd);
 
   const response = await request(app)
     .post('/api/users/signin')
