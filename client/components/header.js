@@ -1,12 +1,11 @@
 import Link from 'next/link';
+import SignOutButton from './sign-out-button';
 
 const Header = ({ currentUser }) => {
   const links = [
-    !currentUser && { label: 'Sign Up', href: '/auth/signup' },
-    !currentUser && { label: 'Sign In', href: '/auth/signin' },
-    currentUser && { label: 'Sign Out', href: '/auth/signout' }
+    { label: 'Sign Up', href: '/auth/signup' },
+    { label: 'Sign In', href: '/auth/signin' },
   ]
-    .filter(link => link)
     .map(({ label, href }) => {
       return(
         <li key={href} className="nav-item">
@@ -24,7 +23,11 @@ const Header = ({ currentUser }) => {
       </Link>
       <div className="collapse navbar-collapse">
         <ul className="navbar-nav ml-auto">
-          {links}
+          {
+            currentUser
+            ? <SignOutButton />
+            : links
+          }
         </ul>
       </div>
     </nav>
