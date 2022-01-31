@@ -1,0 +1,11 @@
+{
+  "name": "@elevenhotdogs-tix",
+  "version": "1.0.0",
+  "description": "Tix microservices project",
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "packages/auth",
+    "packages/client"
+  ]
+}
