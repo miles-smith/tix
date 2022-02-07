@@ -26,3 +26,11 @@ build:
         manual:
           - src: '**/*.js'
             dest: .
+    - image: elevenhotdogs/tix.tickets
+      context: packages/tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
