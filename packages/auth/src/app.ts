@@ -2,7 +2,7 @@ import express from 'express';
 import 'express-async-errors';
 import cookieSession from 'cookie-session';
 import router  from './routes';
-import { errorHandler } from './middlewares/error-handler';
+import { errorHandler } from '@elevenhotdogs-tix/common';
 
 const app = express();
 

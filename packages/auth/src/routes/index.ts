@@ -1,5 +1,5 @@
 import express from 'express';
-import { RoutingError } from '../errors/routing-error';
+import { RoutingError } from '@elevenhotdogs-tix/common';
 import { usersRouter } from './users';
 
 const router = express.Router();
