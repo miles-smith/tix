@@ -1,7 +1,7 @@
 import express from 'express';
 import 'express-async-errors';
 import cookieSession from 'cookie-session';
-import { errorHandler } from '@elevenhotdogs-tix/common';
+import { currentUser,errorHandler } from '@elevenhotdogs-tix/common';
 import router  from './routes';
 
 const app = express();
@@ -13,6 +13,8 @@ app.use(cookieSession({
   signed: false,
   secure: process.env.NODE_ENV !== 'test',
 }));
+
+app.use(currentUser);
 
 app.use('/api', router);
 
