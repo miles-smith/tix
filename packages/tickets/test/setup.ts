@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import { app } from '../src/app';
 
 declare global {
   var signUp: (email?: String, passwd?: String) => Promise<void>;
-  var signIn: (email?: String, passwd?: String) => Promise<string[]>;
+  var signIn: () => string[];
 }
 
 beforeAll(async () => {
@@ -37,15 +38,18 @@ global.signUp = async (email = 'test.user@example.com', passwd = 'my-password') 
     .expect(201);
 }
 
-global.signIn = async (email = 'test.user@example.com', passwd = 'my-password') => {
-  const response =
-    await request(app)
-      .post('/api/users/signin')
-      .send({
-        email: email,
-        password: passwd
-      })
-      .expect(200);
+// Generates a stubbed JWT and session for the purposes of authenticating without relying on
+// external services.
+global.signIn = () => {
+  const payload = {
+    id:    '62064650b18cd064285bc555',
+    email: 'test.user@example.com',
+    iat:   Date.now()
+  }
 
-  return response.get('Set-Cookie');
+  const token = jwt.sign(payload, process.env.JWT_KEY!);
+  const decodedSession = JSON.stringify({ jwt: token });
+  const encodedSession = Buffer.from(decodedSession).toString('base64');
+
+  return [`express:sess=${encodedSession}`];
 }
