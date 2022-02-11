@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import { app } from '../src/app';
 
 declare global {
-  var signUp: (email?: String, passwd?: String) => Promise<void>;
   var signIn: () => string[];
 }
 
@@ -27,16 +26,6 @@ beforeEach(async () => {
 afterAll(async () => {
   await mongoose.connection.close();
 });
-
-global.signUp = async (email = 'test.user@example.com', passwd = 'my-password') => {
-  await request(app)
-    .post('/api/users/signup')
-    .send({
-      email: email,
-      password: passwd
-    })
-    .expect(201);
-}
 
 // Generates a stubbed JWT and session for the purposes of authenticating without relying on
 // external services.
