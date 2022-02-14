@@ -37,7 +37,8 @@ const schema = new Schema<TicketDocument, TicketModel>({
   toJSON: {
     versionKey: false,
     virtuals: true,
-    transform(_doc, ret) {
+    transform(doc, ret) {
+      ret.price = doc.price.toString();
       delete ret._id;
       return ret;
     }
