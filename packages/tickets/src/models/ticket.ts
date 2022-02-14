@@ -4,12 +4,17 @@ import { Model, Schema, HydratedDocument, model, } from 'mongoose';
 // attributes that may be supplied by an end user.
 interface TicketAttributes {
   userId: string;
-  title: string;
-  price: Schema.Types.Decimal128;
+  title:  string;
+  price:  string; // We'll let Mongoose handle decimal conversion!
 }
 
 // Interface that defines what a *complete* document looks like.
-interface TicketDocument extends TicketAttributes {}
+// TODO: Can these two interfaces be DRY'ed?
+interface TicketDocument {
+  userId: string;
+  title:  string;
+  price:  Schema.Types.Decimal128;
+}
 
 interface TicketModel extends Model<TicketDocument> {
   build(attributes: TicketAttributes): HydratedDocument<TicketDocument>;
