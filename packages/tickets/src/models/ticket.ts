@@ -52,4 +52,4 @@ schema.static('build', (attributes: TicketAttributes) => {
 
 const Ticket = model<TicketDocument, TicketModel>('Ticket', schema);
 
-export { Ticket };
+export { Ticket, TicketAttributes };
