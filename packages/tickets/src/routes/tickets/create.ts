@@ -29,7 +29,7 @@ router.post('/', authenticate, validate, async (req: Request, res: Response) => 
 
   res
     .status(201)
-    .send({});
+    .send(ticket);
 });
 
 export { router as createTicketRouter };

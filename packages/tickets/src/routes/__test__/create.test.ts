@@ -22,6 +22,9 @@ describe('authenticated users', () => {
       expect(response.statusCode)
         .toEqual(201);
 
+      expect(response.body).toHaveProperty('title', 'Test');
+      expect(response.body).toHaveProperty('price', '100');
+
       expect(await Ticket.countDocuments())
         .toEqual(1);
     });
