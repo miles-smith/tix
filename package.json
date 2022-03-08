@@ -5,6 +5,7 @@
   "author": "",
   "license": "ISC",
   "workspaces": [
+    "packages/common",
     "packages/auth",
     "packages/client",
     "packages/tickets"
