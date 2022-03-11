@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { authenticate, validateRequest, RoutingError, NotAuthorizedError } from '@elevenhotdogs-tix/common';
 import { Ticket } from '../../models/ticket';
+import { TicketUpdatedPublisher } from '../../events/publishers/ticket-updated-publisher';
+import { natsClient} from '../../nats-client';
 
 const router = express.Router();
 
@@ -37,6 +39,18 @@ router.put('/:id', authenticate, validate, async (req: Request, res: Response) =
 
   ticket.set({ title, price });
   await ticket.save();
+
+  // TODO: There is a potential point of failure here; the resource could save but the event
+  // fail to publish (e.g. perhaps the NATS connection is temporarily lost). This could lead to a
+  // data integrity issue. One possible solution is to use a db transaction to save both the
+  // resource, and the event (to a local collection), and use an out of band process (i.e. a
+  // resilient job queue/worker) to handle event publication.
+  new TicketUpdatedPublisher(natsClient.stan).publish({
+    id:     ticket.id,
+    title:  ticket.get('title'),
+    price:  ticket.get('price').toString(),
+    userId: ticket.get('userId'),
+  });
 
   res
     .status(200)
