@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto';
 import mongoose from 'mongoose';
 import { app } from './app';
 import { natsClient } from './nats-client';
@@ -14,8 +13,24 @@ const start = async () => {
     throw new Error('Missing environment variable: MONGO_URI');
   }
 
+  if(!process.env.NATS_URL) {
+    throw new Error('Missing environment variable: NATS_URL');
+  }
+
+  if(!process.env.NATS_CLUSTER_ID) {
+    throw new Error('Missing environment variable: NATS_CLUSTER_ID');
+  }
+
+  if(!process.env.NATS_CLIENT_ID) {
+    throw new Error('Missing environment variable: NATS_CLIENT_ID');
+  }
+
   try {
-    await natsClient.connect('tix', `tickets-${randomBytes(6).toString('hex')}`, 'http://nats-srv:4222');
+    await natsClient.connect(
+      process.env.NATS_CLUSTER_ID,
+      process.env.NATS_CLIENT_ID,
+      process.env.NATS_URL
+    );
 
     natsClient.stan.on('close', () => {
       console.log('NATS connection closed');
