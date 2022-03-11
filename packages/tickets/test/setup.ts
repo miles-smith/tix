@@ -23,6 +23,10 @@ beforeEach(async () => {
   }
 });
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });

@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from '../../app';
 import { Ticket } from '../../models/ticket';
+import { natsClient } from '../../nats-client';
 
 describe('authenticated users', () => {
   const cookie = global.signIn();
@@ -27,6 +28,18 @@ describe('authenticated users', () => {
 
       expect(await Ticket.countDocuments())
         .toEqual(1);
+    });
+
+    it('publishes an event', async () => {
+      await request(app)
+        .post('/api/tickets')
+        .set('Cookie', cookie)
+        .send({
+          title: 'Test',
+          price: 100.00
+        });
+
+      expect(natsClient.stan.publish).toHaveBeenCalled();
     });
   });
 
@@ -107,6 +120,15 @@ describe('authenticated users', () => {
 
       expect(response.body.errors)
         .toContainEqual({ message: 'Price must be greater than 0', field: 'price' });
+    });
+
+    it('does not publish an event', async () => {
+      await request(app)
+        .post('/api/tickets')
+        .set('Cookie', cookie)
+        .send({});
+
+      expect(natsClient.stan.publish).not.toHaveBeenCalled();
     });
   });
 });

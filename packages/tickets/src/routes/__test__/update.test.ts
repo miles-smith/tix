@@ -2,6 +2,7 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../../app';
 import { Ticket, TicketAttributes } from '../../models/ticket';
+import { natsClient } from '../../nats-client';
 
 const createTicket = async (attributes: TicketAttributes) => {
   const ticket = Ticket.build(attributes);
@@ -57,6 +58,27 @@ describe('as an authenticated user', () => {
 
         expect(updatedTicket!.get('title')).toBe(payload.title);
         expect(updatedTicket!.get('price').toString()).toBe(payload.price);
+      });
+
+      it('publishes an event', async () => {
+        const ticket = await createTicket({
+          userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
+          title:  'Test Ticket',
+          price:  '1.00'
+        });
+
+        const payload = {
+          userId: ticket.get('userId'),
+          title: 'Tested Ticket',
+          price: '2.00'
+        }
+
+        await request(app)
+          .post('/api/tickets')
+          .set('Cookie', cookie)
+          .send(payload);
+
+        expect(natsClient.stan.publish).toHaveBeenCalled();
       });
     });
 
@@ -114,6 +136,27 @@ describe('as an authenticated user', () => {
 
         expect(updatedTicket!.get('title')).not.toBe(payload.title);
         expect(updatedTicket!.get('price').toString()).not.toBe(payload.price);
+      });
+
+      it('does not publish an event', async () => {
+        const ticket = await createTicket({
+          userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
+          title:  'Test Ticket',
+          price:  '1.00'
+        });
+
+        const payload = {
+          userId: ticket.get('userId'),
+          title: '',
+          price: '-1.00'
+        }
+
+        await request(app)
+          .post('/api/tickets')
+          .set('Cookie', cookie)
+          .send(payload);
+
+        expect(natsClient.stan.publish).not.toHaveBeenCalled();
       });
     });
   });
