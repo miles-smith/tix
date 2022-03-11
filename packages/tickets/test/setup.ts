@@ -42,3 +42,5 @@ global.signIn = () => {
 
   return [`express:sess=${encodedSession}`];
 }
+
+jest.mock('../src/nats-client');
