@@ -8,6 +8,7 @@
     "packages/common",
     "packages/auth",
     "packages/client",
-    "packages/tickets"
+    "packages/tickets",
+    "packages/orders"
   ]
 }
