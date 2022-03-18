@@ -1,4 +1,5 @@
 import { Model, Schema, HydratedDocument, Document, Decimal128, model, } from 'mongoose';
+import { Order, OrderStatus } from './order';
 
 // Interface that defines a subset of the full document, which exposes e.g. only those
 // attributes that may be supplied by an end user.
@@ -10,6 +11,7 @@ interface TicketAttributes {
 interface TicketDocument extends Document {
   title: string;
   price: Decimal128;
+  isReserved(): Promise<boolean>;
 }
 
 interface TicketModel extends Model<TicketDocument> {
@@ -42,6 +44,21 @@ const schema = new Schema<TicketDocument, TicketModel>({
 schema.static('build', (attributes: TicketAttributes) => {
   return new Ticket(attributes);
 });
+
+schema.methods.isReserved = async function() {
+  const order = await Order.findOne({
+    ticket: this,
+    status: {
+      $in: [
+        OrderStatus.Created,
+        OrderStatus.AwaitingPayment,
+        OrderStatus.Complete
+      ]
+    }
+  });
+
+  return !!order;
+};
 
 const Ticket = model<TicketDocument, TicketModel>('Ticket', schema);
 
