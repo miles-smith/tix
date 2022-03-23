@@ -16,7 +16,8 @@ const createTicket = async () => {
 };
 
 describe('authenticated users', () => {
-  const cookie = global.signIn();
+  const user   = global.generateTestUser();
+  const cookie = global.signIn(user);
 
   describe('with valid inputs', () => {
     it('creates a new order', async () => {
