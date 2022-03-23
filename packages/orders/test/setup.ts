@@ -1,10 +1,17 @@
+import { randomBytes } from 'crypto';
 import mongoose from 'mongoose';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { app } from '../src/app';
 
+interface TestUser {
+  id: string;
+  email: string;
+}
+
 declare global {
-  var signIn: () => string[];
+  var generateTestUser: () => TestUser;
+  var signIn: (user: TestUser) => string[];
 }
 
 beforeAll(async () => {
@@ -31,12 +38,20 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
+// Generates a new, minimal user-like object.
+global.generateTestUser = () => {
+  return {
+    id: new mongoose.Types.ObjectId().toString(),
+    email: `test-user.${randomBytes(8).toString('hex')}@example.com`
+  }
+}
+
 // Generates a stubbed JWT and session for the purposes of authenticating without relying on
 // external services.
-global.signIn = () => {
+global.signIn = (user: TestUser) => {
   const payload = {
-    id:    '62064650b18cd064285bc555',
-    email: 'test.user@example.com',
+    id:    user.id,
+    email: user.email,
     iat:   Date.now()
   }
 
