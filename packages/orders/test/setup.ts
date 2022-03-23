@@ -63,3 +63,5 @@ global.signIn = (user: TestUser) => {
 }
 
 jest.mock('../src/nats-client');
+
+export { TestUser }
