@@ -23,4 +23,5 @@ __exportStar(require("./events/listener"), exports);
 __exportStar(require("./events/publisher"), exports);
 __exportStar(require("./events/subjects"), exports);
 __exportStar(require("./events/tickets"), exports);
+__exportStar(require("./events/orders"), exports);
 __exportStar(require("./events/types/order-status"), exports);
