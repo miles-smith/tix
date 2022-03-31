@@ -33,6 +33,8 @@ router.delete('/:id', authenticate, async (req: Request, res: Response) => {
     throw new BadRequestError('Cannot cancel a completed order');
   }
 
+  // TODO: Probably want to think about short circuiting should a request come in
+  // for an already cancelled order.
   order.status = OrderStatus.Cancelled;
   await order.save();
   publishOrderCancelledEvent(order);
