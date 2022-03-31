@@ -10,7 +10,6 @@ const config: InitialOptionsTsJest = {
     },
   },
   globalSetup: "<rootDir>/test/globalSetup.ts",
-  globalTeardown: "<rootDir>/test/globalTeardown.ts",
   setupFilesAfterEnv: [
     "<rootDir>/test/setup.ts"
   ]
