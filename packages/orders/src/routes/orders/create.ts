@@ -3,8 +3,10 @@ import mongoose from 'mongoose';
 import { body } from 'express-validator';
 import { authenticate, validateRequest } from '@elevenhotdogs-tix/common';
 import { RoutingError, BadRequestError } from '@elevenhotdogs-tix/common';
-import { Ticket } from '../../models/ticket';
-import { Order, OrderStatus } from '../../models/order';
+import { Ticket, TicketDocument } from '../../models/ticket';
+import { Order, OrderDocument, OrderStatus } from '../../models/order';
+import { natsClient } from '../../nats-client';
+import { OrderCreatedPublisher } from '../../events/publishers/order-created-publisher';
 
 const router = express.Router();
 
@@ -25,6 +27,20 @@ const validate = [
   ticketValidator,
   validateRequest
 ];
+
+const publishOrderCreatedEvent = (order: OrderDocument, ticket: TicketDocument) => {
+  new OrderCreatedPublisher(natsClient.stan)
+    .publish({
+      id: order.id,
+      userId: order.userId,
+      status: order.status,
+      expiresAt: order.expiresAt.toISOString(), // Careful around timezones! Provide everything in UTC.
+      ticket: {
+        id: ticket.id,
+        price: ticket.price.toString()
+      }
+    });
+}
 
 router.post('/', authenticate, validate, async (req: Request, res: Response) => {
   const { ticketId } = req.body;
@@ -48,8 +64,7 @@ router.post('/', authenticate, validate, async (req: Request, res: Response) => 
   });
 
   await order.save();
-
-  // TODO: Publish message to event bus
+  publishOrderCreatedEvent(order, ticket);
 
   res
     .status(201)

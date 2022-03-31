@@ -58,4 +58,4 @@ schema.static('build', (attributes: OrderAttributes) => {
 
 const Order = model<OrderDocument, OrderModel>('Order', schema);
 
-export { Order, OrderAttributes, OrderStatus };
+export { Order, OrderAttributes, OrderDocument, OrderStatus };
