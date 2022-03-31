@@ -13,8 +13,6 @@ var Publisher = /** @class */ (function () {
                     return reject(err);
                 }
                 else {
-                    console.log("Event published: ".concat(_this.subject));
-                    console.log('Event data', data);
                     resolve();
                 }
             });
