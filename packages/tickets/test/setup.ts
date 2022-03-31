@@ -1,8 +1,5 @@
-import mongoose from 'mongoose';
-import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { bootstrapMongo } from './setup-mongo';
-import { app } from '../src/app';
 
 declare global {
   var signIn: () => string[];

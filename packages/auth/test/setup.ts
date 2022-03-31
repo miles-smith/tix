@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import request from 'supertest';
 import { bootstrapMongo } from './setup-mongo';
 import { app } from '../src/app';
