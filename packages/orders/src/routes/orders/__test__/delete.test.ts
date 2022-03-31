@@ -1,6 +1,7 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../../../app';
+import { natsClient } from '../../../nats-client';
 import { TestUser } from '../../../../test/setup';
 import { Ticket, TicketDocument } from '../../../models/ticket';
 import { Order, OrderStatus } from '../../../models/order';
@@ -19,7 +20,7 @@ const createOrder = async (ticket: TicketDocument, user: TestUser) => {
   const order = Order.build({
     ticket: ticket,
     userId: user.id,
-    status: OrderStatus.Complete,
+    status: OrderStatus.Created,
     expiresAt: new Date()
   });
 
@@ -36,9 +37,6 @@ describe('as an authenticated user', () => {
     const order  = await createOrder(ticket, user);
     const count  = await Order.countDocuments({ status: OrderStatus.Cancelled });
 
-    order.status = OrderStatus.Created;
-    await order.save();
-
     const response =
       await request(app)
         .delete(`/api/orders/${order.id}`)
@@ -51,6 +49,9 @@ describe('as an authenticated user', () => {
   it('it cannot cancel an already completed order', async () => {
     const ticket = await createTicket('Test Ticket');
     const order  = await createOrder(ticket, user);
+
+    await order.update({ status: OrderStatus.Complete });
+
     const count  = await Order.countDocuments({ status: OrderStatus.Cancelled });
 
     const response =
@@ -62,7 +63,16 @@ describe('as an authenticated user', () => {
     expect(await Order.countDocuments({ status: OrderStatus.Cancelled })).toEqual(count);
   });
 
-  it.todo('it dispatches an event on cancellation');
+  it('it dispatches an event on cancellation', async () => {
+    const ticket = await createTicket('Test Ticket');
+    const order  = await createOrder(ticket, user);
+
+    await request(app)
+      .delete(`/api/orders/${order.id}`)
+      .set('Cookie', cookie);
+
+    expect(natsClient.stan.publish).toHaveBeenCalled();
+  });
 
   it('returns an error if the order is not found', async () => {
     const id = new mongoose.Types.ObjectId();
