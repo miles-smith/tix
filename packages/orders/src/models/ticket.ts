@@ -4,6 +4,7 @@ import { Order, OrderStatus } from './order';
 // Interface that defines a subset of the full document, which exposes e.g. only those
 // attributes that may be supplied by an end user.
 interface TicketAttributes {
+  id:    string;
   title: string;
   price: string;
 }
@@ -42,7 +43,12 @@ const schema = new Schema<TicketDocument, TicketModel>({
 
 // Factory method ensures we get type checking on incoming args when instantiatng a new object.
 schema.static('build', (attributes: TicketAttributes) => {
-  return new Ticket(attributes);
+  // TODO: Smarter way of transforming `id` to `_id` without having to explicitly list/set all other attrs. 
+  return new Ticket({
+    _id:   attributes.id,
+    title: attributes.title,
+    price: attributes.price,
+  });
 });
 
 schema.methods.isReserved = async function() {
