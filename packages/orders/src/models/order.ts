@@ -1,4 +1,5 @@
 import { Model, Schema, HydratedDocument, Document, model, } from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 import { OrderStatus } from '@elevenhotdogs-tix/common';
 import { TicketDocument } from './ticket';
 
@@ -12,6 +13,7 @@ interface OrderAttributes {
 }
 
 interface OrderDocument extends Document {
+  version:   number;
   userId:    string;
   status:    OrderStatus;
   expiresAt: Date;
@@ -41,8 +43,8 @@ const schema = new Schema<OrderDocument, OrderModel>({
     ref: 'Ticket'
   }
 }, {
+  versionKey: 'version',
   toJSON: {
-    versionKey: false,
     virtuals: true,
     transform(doc, ret) {
       delete ret._id;
@@ -50,6 +52,12 @@ const schema = new Schema<OrderDocument, OrderModel>({
     }
   }
 });
+
+// NOTE: There's currently an open PR for an issue with `mongoose-update-if-current` and
+// Typescript compatibility: https://github.com/eoin-obrien/mongoose-update-if-current/pull/454
+// We'll tell TS to ignore this for now...
+// @ts-ignore
+schema.plugin(updateIfCurrentPlugin);
 
 // Factory method ensures we get type checking on incoming args when instantiatng a new object.
 schema.static('build', (attributes: OrderAttributes) => {
