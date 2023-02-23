@@ -19,6 +19,7 @@ interface TicketDocument extends Document {
 
 interface TicketModel extends Model<TicketDocument> {
   build(attributes: TicketAttributes): HydratedDocument<TicketDocument>;
+  findByEvent(event: { id: string, version: number}): Promise<HydratedDocument<TicketDocument> | null>;
 }
 
 const schema = new Schema<TicketDocument, TicketModel>({
@@ -56,6 +57,13 @@ schema.static('build', (attributes: TicketAttributes) => {
     _id:   attributes.id,
     title: attributes.title,
     price: attributes.price,
+  });
+});
+
+schema.static('findByEvent', (event: { id: string, version: number }) => {
+  return Ticket.findOne({
+    _id: event.id,
+    version: event.version - 1
   });
 });
 
