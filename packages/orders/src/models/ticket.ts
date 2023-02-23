@@ -1,4 +1,5 @@
 import { Model, Schema, HydratedDocument, Document, Decimal128, model, } from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 import { Order, OrderStatus } from './order';
 
 // Interface that defines a subset of the full document, which exposes e.g. only those
@@ -10,8 +11,9 @@ interface TicketAttributes {
 }
 
 interface TicketDocument extends Document {
-  title: string;
-  price: Decimal128;
+  version: number;
+  title:   string;
+  price:   Decimal128;
   isReserved(): Promise<boolean>;
 }
 
@@ -30,8 +32,8 @@ const schema = new Schema<TicketDocument, TicketModel>({
     min: 0
   }
 }, {
+  versionKey: 'version',
   toJSON: {
-    versionKey: false,
     virtuals: true,
     transform(doc, ret) {
       ret.price = doc.price.toString();
@@ -40,6 +42,12 @@ const schema = new Schema<TicketDocument, TicketModel>({
     }
   }
 });
+
+// NOTE: There's currently an open PR for an issue with `mongoose-update-if-current` and
+// Typescript compatibility: https://github.com/eoin-obrien/mongoose-update-if-current/pull/454
+// We'll tell TS to ignore this for now...
+// @ts-ignore
+schema.plugin(updateIfCurrentPlugin);
 
 // Factory method ensures we get type checking on incoming args when instantiatng a new object.
 schema.static('build', (attributes: TicketAttributes) => {
