@@ -37,7 +37,6 @@ const publishOrderCreatedEvent = (order: OrderDocument, ticket: TicketDocument) 
       expiresAt: order.expiresAt.toISOString(), // Careful around timezones! Provide everything in UTC.
       ticket: {
         id: ticket.id,
-        version: ticket.version,
         price: ticket.price.toString()
       }
     });

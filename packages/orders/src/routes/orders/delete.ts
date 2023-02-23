@@ -12,8 +12,7 @@ const publishOrderCancelledEvent = (order: OrderDocument) => {
     .publish({
       id: order.id,
       ticket: {
-        id: order.ticket.id,
-        version: order.ticket.version,
+        id: order.ticket.id
       }
     });
 }
