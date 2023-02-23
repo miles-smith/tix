@@ -32,6 +32,7 @@ const publishOrderCreatedEvent = (order: OrderDocument, ticket: TicketDocument) 
   new OrderCreatedPublisher(natsClient.stan)
     .publish({
       id: order.id,
+      version: order.version,
       userId: order.userId,
       status: order.status,
       expiresAt: order.expiresAt.toISOString(), // Careful around timezones! Provide everything in UTC.

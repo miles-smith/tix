@@ -11,6 +11,7 @@ const publishOrderCancelledEvent = (order: OrderDocument) => {
   new OrderCancelledPublisher(natsClient.stan)
     .publish({
       id: order.id,
+      version: order.version,
       ticket: {
         id: order.ticket.id
       }
