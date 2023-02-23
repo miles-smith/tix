@@ -7,6 +7,7 @@ import { Order, OrderStatus } from '../../../models/order';
 
 const createTicket = async () => {
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: 'Test Ticket',
     price: '1.00'
   });
