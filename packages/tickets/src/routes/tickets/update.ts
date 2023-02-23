@@ -46,10 +46,11 @@ router.put('/:id', authenticate, validate, async (req: Request, res: Response) =
   // resource, and the event (to a local collection), and use an out of band process (i.e. a
   // resilient job queue/worker) to handle event publication.
   new TicketUpdatedPublisher(natsClient.stan).publish({
-    id:     ticket.id,
-    title:  ticket.get('title'),
-    price:  ticket.get('price').toString(),
-    userId: ticket.get('userId'),
+    id:      ticket.id,
+    version: ticket.version,
+    title:   ticket.get('title'),
+    price:   ticket.get('price').toString(),
+    userId:  ticket.get('userId'),
   });
 
   res
