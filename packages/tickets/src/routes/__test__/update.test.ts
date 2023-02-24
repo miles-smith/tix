@@ -75,7 +75,7 @@ describe('as an authenticated user', () => {
           }
 
           await request(app)
-            .post('/api/tickets')
+            .put(`/api/tickets/${ticket.id}`)
             .set('Cookie', cookie)
             .send(payload);
 
@@ -211,7 +211,7 @@ describe('as an authenticated user', () => {
         }
 
         await request(app)
-          .post('/api/tickets')
+          .put(`/api/tickets/${ticket.id}`)
           .set('Cookie', cookie)
           .send(payload);
 
