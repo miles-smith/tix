@@ -1,7 +1,6 @@
-
 import mongoose from 'mongoose';
 import { Message } from 'node-nats-streaming';
-import { OrderCreatedEvent, OrderStatus } from '@elevenhotdogs-tix/common';
+import { OrderCreatedEvent, OrderStatus, Subjects } from '@elevenhotdogs-tix/common';
 import { OrderCreatedListener } from '../order-created-listener';
 import { Ticket, TicketDocument } from '../../../models/ticket';
 import { natsClient } from '../../../nats-client';
@@ -57,5 +56,15 @@ describe('OrderCreatedListener', () => {
     await listener.onMessage(data, message);
 
     expect(message.ack).toHaveBeenCalled();
+  });
+
+  it('emits a `TicketUpdated` event', async () => {
+    await listener.onMessage(data, message);
+
+    expect(natsClient.stan.publish).toHaveBeenCalledWith(
+      Subjects.TicketUpdated,
+      expect.anything(),
+      expect.anything(),
+    );
   });
 });
