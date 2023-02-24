@@ -31,54 +31,113 @@ describe('as an authenticated user', () => {
 
   describe('as the ticket owner', () => {
     describe('with valid inputs', () => {
-      it('should update the resource', async () => {
-        const ticket = await createTicket({
-          userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
-          title:  'Test Ticket',
-          price:  '1.00'
+      describe('unreserved ticket', () => {
+        it('should update the resource', async () => {
+          const ticket = await createTicket({
+            userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
+            title:  'Test Ticket',
+            price:  '1.00'
+          });
+
+          const payload = {
+            userId: ticket.get('userId'),
+            title: 'Tested Ticket',
+            price: '2.00'
+          }
+
+          const response =
+            await request(app)
+              .put(`/api/tickets/${ticket.id}`)
+              .set('Cookie', cookie)
+              .send(payload);
+
+          const updatedTicket = await Ticket.findById(ticket.id);
+
+          expect(response.statusCode).toBe(200);
+          expect(response.body).toHaveProperty('title', payload.title);
+          expect(response.body).toHaveProperty('price', payload.price);
+
+          expect(updatedTicket!.get('title')).toBe(payload.title);
+          expect(updatedTicket!.get('price').toString()).toBe(payload.price);
         });
 
-        const payload = {
-          userId: ticket.get('userId'),
-          title: 'Tested Ticket',
-          price: '2.00'
-        }
+        it('publishes an event', async () => {
+          const ticket = await createTicket({
+            userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
+            title:  'Test Ticket',
+            price:  '1.00'
+          });
 
-        const response =
+          const payload = {
+            userId: ticket.get('userId'),
+            title: 'Tested Ticket',
+            price: '2.00'
+          }
+
+          await request(app)
+            .post('/api/tickets')
+            .set('Cookie', cookie)
+            .send(payload);
+
+          expect(natsClient.stan.publish).toHaveBeenCalled();
+        });
+      });
+
+      describe('reserved ticket', () => {
+        it('does not update the resource', async () => {
+          const ticket = await createTicket({
+            userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
+            title:  'Test Ticket',
+            price:  '1.00',
+          });
+
+          ticket.set({ orderId: new mongoose.Types.ObjectId().toHexString() });
+          await ticket.save();
+
+          const payload = {
+            userId: ticket.get('userId'),
+            title: 'Tested Ticket',
+            price: '2.00'
+          }
+
+          const response =
+            await request(app)
+              .put(`/api/tickets/${ticket.id}`)
+              .set('Cookie', cookie)
+              .send(payload);
+
+          const updatedTicket = await Ticket.findById(ticket.id);
+
+          expect(response.statusCode).toBe(400);
+          expect(response.body).toHaveProperty('errors');
+
+          expect(updatedTicket!.get('title')).not.toBe(payload.title);
+          expect(updatedTicket!.get('price').toString()).not.toBe(payload.price);
+        });
+
+        it('does not publish an event', async () => {
+          const ticket = await createTicket({
+            userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
+            title:  'Test Ticket',
+            price:  '1.00'
+          });
+
+          ticket.set({ orderId: new mongoose.Types.ObjectId().toHexString() });
+          await ticket.save();
+
+          const payload = {
+            userId: ticket.get('userId'),
+            title: 'Tested Ticket',
+            price: '2.00'
+          }
+
           await request(app)
             .put(`/api/tickets/${ticket.id}`)
             .set('Cookie', cookie)
             .send(payload);
 
-        const updatedTicket = await Ticket.findById(ticket.id);
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty('title', payload.title);
-        expect(response.body).toHaveProperty('price', payload.price);
-
-        expect(updatedTicket!.get('title')).toBe(payload.title);
-        expect(updatedTicket!.get('price').toString()).toBe(payload.price);
-      });
-
-      it('publishes an event', async () => {
-        const ticket = await createTicket({
-          userId: '62064650b18cd064285bc555', // TODO: Magic strings; Clean this up.
-          title:  'Test Ticket',
-          price:  '1.00'
+          expect(natsClient.stan.publish).not.toHaveBeenCalled();
         });
-
-        const payload = {
-          userId: ticket.get('userId'),
-          title: 'Tested Ticket',
-          price: '2.00'
-        }
-
-        await request(app)
-          .post('/api/tickets')
-          .set('Cookie', cookie)
-          .send(payload);
-
-        expect(natsClient.stan.publish).toHaveBeenCalled();
       });
     });
 

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { authenticate, validateRequest, RoutingError, NotAuthorizedError } from '@elevenhotdogs-tix/common';
+import { authenticate, validateRequest, RoutingError, NotAuthorizedError, BadRequestError } from '@elevenhotdogs-tix/common';
 import { Ticket } from '../../models/ticket';
 import { TicketUpdatedPublisher } from '../../events/publishers/ticket-updated-publisher';
 import { natsClient} from '../../nats-client';
@@ -33,6 +33,10 @@ router.put('/:id', authenticate, validate, async (req: Request, res: Response) =
 
   if(ticket.userId !== req.currentUser!.id) {
     throw new NotAuthorizedError();
+  }
+
+  if(ticket.orderId) {
+    throw new BadRequestError('Cannot edit a reserved ticket');
   }
 
   const { title, price } = req.body;
