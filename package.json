@@ -9,6 +9,7 @@
     "packages/auth",
     "packages/client",
     "packages/tickets",
-    "packages/orders"
+    "packages/orders",
+    "packages/expiration"
   ]
 }
