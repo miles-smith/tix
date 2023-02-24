@@ -1,4 +1,4 @@
-import { Model, Schema, HydratedDocument, model, } from 'mongoose';
+import { Model, Schema, Document, HydratedDocument, model, } from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // Interface that defines a subset of the full document, which exposes e.g. only those
@@ -11,11 +11,12 @@ interface TicketAttributes {
 
 // Interface that defines what a *complete* document looks like.
 // TODO: Can these two interfaces be DRY'ed?
-interface TicketDocument {
-  version: number;
-  userId:  string;
-  title:   string;
-  price:   Schema.Types.Decimal128;
+interface TicketDocument extends Document {
+  version:  number;
+  userId:   string;
+  title:    string;
+  price:    Schema.Types.Decimal128;
+  orderId?: string;
 }
 
 interface TicketModel extends Model<TicketDocument> {
@@ -34,6 +35,10 @@ const schema = new Schema<TicketDocument, TicketModel>({
   price: {
     type: Schema.Types.Decimal128,
     required: true
+  },
+  orderId: {
+    type: String,
+    required: false
   },
 }, {
   versionKey: 'version',
@@ -60,4 +65,4 @@ schema.static('build', (attributes: TicketAttributes) => {
 
 const Ticket = model<TicketDocument, TicketModel>('Ticket', schema);
 
-export { Ticket, TicketAttributes };
+export { Ticket, TicketAttributes, TicketDocument };
