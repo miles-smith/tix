@@ -10,6 +10,7 @@
     "packages/client",
     "packages/tickets",
     "packages/orders",
-    "packages/expiration"
+    "packages/expiration",
+    "packages/payments"
   ]
 }
