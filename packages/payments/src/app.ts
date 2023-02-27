@@ -2,6 +2,7 @@ import express from 'express';
 import 'express-async-errors';
 import cookieSession from 'cookie-session';
 import { currentUser, errorHandler } from '@elevenhotdogs-tix/common';
+import router from "./routes/index";
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.use(cookieSession({
 }));
 
 app.use(currentUser);
+
+app.use('/api', router);
 
 app.use(errorHandler);
 
