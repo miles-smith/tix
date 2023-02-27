@@ -21,6 +21,7 @@ interface OrderDocument extends Document {
 
 interface OrderModel extends Model<OrderDocument> {
   build(attributes: OrderAttributes): HydratedDocument<OrderDocument>;
+  findByEvent(event: { id: string, version: number }): Promise<HydratedDocument<OrderDocument> | null>;
 }
 
 const schema = new Schema<OrderDocument, OrderModel>({
@@ -62,6 +63,13 @@ schema.static('build', (attributes: OrderAttributes) => {
     userId:  attributes.userId,
     status:  attributes.status,
     price:   attributes.price
+  });
+});
+
+schema.static('findByEvent', (event: { id: string, version: number }) => {
+  return Order.findOne({
+    _id: event.id,
+    version: event.version - 1,
   });
 });
 
