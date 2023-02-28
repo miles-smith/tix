@@ -16,6 +16,11 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
       throw new Error('Order not found');
     }
 
+    if(order.status === OrderStatus.Complete) {
+      message.ack();
+      return
+    }
+
     order.set({ status: OrderStatus.Cancelled });
 
     await order.save();
