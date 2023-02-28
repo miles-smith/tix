@@ -25,4 +25,5 @@ __exportStar(require("./events/subjects"), exports);
 __exportStar(require("./events/tickets"), exports);
 __exportStar(require("./events/orders"), exports);
 __exportStar(require("./events/expiration"), exports);
+__exportStar(require("./events/payments"), exports);
 __exportStar(require("./events/types/order-status"), exports);
