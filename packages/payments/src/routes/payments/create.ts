@@ -7,6 +7,8 @@ import { BadRequestError, RoutingError, NotAuthorizedError } from "@elevenhotdog
 import { stripe} from "../../stripe";
 import { Order } from "../../models/order";
 import { Payment } from "../../models/payment";
+import { PaymentCreatedPublisher } from "../../events/publishers/payment-created-publisher";
+import { natsClient } from "../../nats-client";
 
 const gbp = (value: mongoose.Types.Decimal128) => currency(value.toString(), { symbol: '£' });
 
@@ -58,9 +60,16 @@ router.post('/', authenticate, validate, async (req: Request, res: Response) => 
 
   await payment.save();
 
+  new PaymentCreatedPublisher(natsClient.stan).publish({
+    id:       payment.id,
+    version:  payment.version,
+    orderId:  order.id,
+    chargeId: charge.id,
+  });
+
   res
     .status(201)
-    .send({ success: true });
+    .send(payment);
 });
 
 export { router as createPaymentRouter };

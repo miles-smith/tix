@@ -1,6 +1,8 @@
 
 import request from 'supertest';
 import mongoose from 'mongoose';
+import { Subjects } from '@elevenhotdogs-tix/common';
+import { natsClient } from '../../../nats-client';
 import { stripe } from '../../../stripe';
 import { app } from '../../../app';
 import { Order, OrderDocument, OrderStatus } from '../../../models/order';
@@ -113,6 +115,22 @@ describe('authenticated users', () => {
             expect(payment).not.toBeNull();
             expect(payment!.chargeId).not.toBeNull();
             expect(payment!.chargeId).toBeDefined();
+          });
+
+          it('publishes an event', async () => {
+            await request(app)
+              .post('/api/payments')
+              .set('Cookie', cookie)
+              .send({
+                orderId: order.id,
+                token
+              });
+
+            expect(natsClient.stan.publish).toHaveBeenCalledWith(
+              Subjects.PaymentCreated,
+              expect.anything(),
+              expect.anything(),
+            )
           });
         });
       });
