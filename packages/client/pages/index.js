@@ -1,5 +1,3 @@
-import { apiClient } from '../api/client';
-
 const HomePage = ({ currentUser }) => {
   return(
     <section>
@@ -14,9 +12,5 @@ const HomePage = ({ currentUser }) => {
     </section>
   );
 }
-
-// export const getServerSideProps = async () => {
-//   return { props: {} };
-// }
 
 export default HomePage;
