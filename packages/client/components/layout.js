@@ -4,7 +4,9 @@ const Layout = ({ children, currentUser }) => {
   return(
     <>
       <Header currentUser={currentUser} />
-      <main>{children}</main>
+      <div className="container">
+        <main>{children}</main>
+      </div>
     </>
   );
 }
