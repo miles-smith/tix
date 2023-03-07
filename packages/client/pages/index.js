@@ -1,9 +1,7 @@
-import currency from "currency.js";
 import { apiClient } from "../api/client";
+import { gbp } from "../utils";
 
 const HomePage = ({ currentUser, tickets }) => {
-  const gbp = (value) => currency(value.toString(), { symbol: '£' });
-
   return(
     <>
       <header>
