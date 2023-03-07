@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { apiClient } from "../api/client";
 import { gbp } from "../utils";
 
@@ -12,6 +13,7 @@ const HomePage = ({ currentUser, tickets }) => {
           <tr>
             <th>Title</th>
             <th>Price</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -21,6 +23,11 @@ const HomePage = ({ currentUser, tickets }) => {
                 <tr key={ticket.id} className="ticket" id={`ticket-${ticket.id}`}>
                   <td>{ticket.title}</td>
                   <td>{gbp(ticket.price).format()}</td>
+                  <td>
+                    <Link href="/tickets/[ticketId]" as={`/tickets/${ticket.id}`}>
+                      <a>show</a>
+                    </Link>
+                  </td>
                 </tr>
               );
             })
