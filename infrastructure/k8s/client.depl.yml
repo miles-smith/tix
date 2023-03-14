@@ -16,6 +16,12 @@ spec:
         - name: client
           image: elevenhotdogs/tix.client
           imagePullPolicy: IfNotPresent
+          env:
+            - name: STRIPE_PUBLISHABLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-key
+                  key: STRIPE_PUBLISHABLE_KEY
 ---
 apiVersion: v1
 kind: Service
