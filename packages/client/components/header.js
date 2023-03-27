@@ -1,20 +1,19 @@
 import Link from 'next/link';
+import NavLink from './NavLink';
 import SignOutButton from './sign-out-button';
 
 const Header = ({ currentUser }) => {
-  const links = [
-    { label: 'Sign Up', href: '/auth/signup' },
-    { label: 'Sign In', href: '/auth/signin' },
-  ]
-    .map(({ label, href }) => {
-      return(
-        <li key={href} className="nav-item">
-          <Link href={href}>
-            <a className="nav-link">{label}</a>
-          </Link>
-        </li>
-      )
-    });
+  const unauthenticatedLinks =
+    <>
+      <NavLink href="/auth/signup" label="Sign Up" />
+      <NavLink href="/auth/signin" label="Sign In" />
+    </>;
+
+  const authenticatedLinks =
+    <>
+      <NavLink href="/orders" label="My Orders" />
+      <SignOutButton />
+    </>;
 
   return(
     <nav className="navbar navbar-expand navbar-light bg-light">
@@ -25,8 +24,8 @@ const Header = ({ currentUser }) => {
         <ul className="navbar-nav ml-auto">
           {
             currentUser
-            ? <SignOutButton />
-            : links
+            ? authenticatedLinks
+            : unauthenticatedLinks
           }
         </ul>
       </div>
