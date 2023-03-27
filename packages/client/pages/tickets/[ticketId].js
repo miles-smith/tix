@@ -23,7 +23,7 @@ const TicketShow = ({ ticket }) => {
         <dt>Price:</dt>
         <dd>{gbp(ticket.price).format()}</dd>
       </dl>
-      <button className="btn btn-primary" onClick={doRequest}>Buy</button>
+      <button className="btn btn-primary" onClick={() => doRequest()}>Buy</button>
     </div>
     </>
   );
