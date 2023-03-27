@@ -11,6 +11,7 @@ const Header = ({ currentUser }) => {
 
   const authenticatedLinks =
     <>
+      <NavLink href="/tickets/new" label="Sell Tickets" />
       <NavLink href="/orders" label="My Orders" />
       <SignOutButton />
     </>;
