@@ -9,19 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install -w packages/auth && npm run test:ci -w packages/auth
+      - run: npm install -w packages/auth
+      - run: npm run test:ci -w packages/auth
   test-tickets:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install -w packages/tickets && npm run test:ci -w packages/tickets
+      - run: npm install -w packages/tickets
+      - run: npm run test:ci -w packages/tickets
   test-orders:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install -w packages/orders && npm run test:ci -w packages/orders
+      - run: npm install -w packages/orders
+      - run: npm run test:ci -w packages/orders
   test-payments:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm install -w packages/payments && npm run test:ci -w packages/payments
+      - run: npm install -w packages/payments
+      - run: npm run test:ci -w packages/payments
