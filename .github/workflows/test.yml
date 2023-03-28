@@ -1,24 +1,25 @@
 name: Run test suites
-on: pull_request
-  branches:
-    - main
+on: 
+  pull_request:
+    branches:
+      - main
 jobs:
- test.auth:
+ test-auth:
    runs-on: ubuntu-latest
    steps:
      - uses: actions/checkout@v2
      - run: npm install -w packages/auth && npm run test:ci -w packages/auth
- test.tickets:
+ test-tickets:
    runs-on: ubuntu-latest
    steps:
      - uses: actions/checkout@v2
      - run: npm install -w packages/tickets && npm run test:ci -w packages/tickets
- test.orders:
+ test-orders:
    runs-on: ubuntu-latest
    steps:
      - uses: actions/checkout@v2
      - run: npm install -w packages/orders && npm run test:ci -w packages/orders
- test.payments:
+ test-payments:
    runs-on: ubuntu-latest
    steps:
      - uses: actions/checkout@v2
