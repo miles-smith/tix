@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ts-node-dev --poll src/index.ts",
     "test": "jest --watch --no-cache"
+    "test:ci": "jest"
   },
   "keywords": [],
   "author": "",
