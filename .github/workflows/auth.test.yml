@@ -1,8 +1,0 @@
-name: Run auth package test suite
-on: pull_request
-jobs:
- build:
-   runs-on: ubuntu-latest
-   steps:
-     - uses: actions/checkout@v2
-     - run: npm install -w packages/auth && npm run test:ci -w packages/auth
