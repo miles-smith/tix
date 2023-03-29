@@ -7,11 +7,15 @@ on:
     paths:
       - packages/auth/**
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
@@ -26,3 +30,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+      - name: DigitalOcean authentication
+        run: doctl kubernetes cluster kubeconfig save ${{ secrets.DIGITALOCEAN_K8S_TOKEN }}
+      - name: Rollout
+        run: kubectl rollout restart deployment auth-depl
