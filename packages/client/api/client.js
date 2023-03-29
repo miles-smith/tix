@@ -12,7 +12,7 @@ import axios from 'axios';
 export const apiClient = ({ req }) => {
   if (typeof window === 'undefined') {
     return axios.create({
-      baseURL: 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
+      baseURL: process.env.BASE_URL,
       headers: req.headers,
     });
   } else {

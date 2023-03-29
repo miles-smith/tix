@@ -17,6 +17,11 @@ spec:
           image: elevenhotdogs/tix.client
           imagePullPolicy: IfNotPresent
           env:
+            - name: BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: client-config
+                  key: base_url
             - name: STRIPE_PUBLISHABLE_KEY
               valueFrom:
                 secretKeyRef:
