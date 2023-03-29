@@ -10,7 +10,7 @@ spec:
   tls:
   - hosts:
     - tix.elevenhotdogs.com
-    secretName: letsencrypt-nginx
+    secretName: letsencrypt-nginx-private-key
   rules:
     - host: tix.elevenhotdogs.com
       http:
