@@ -26,7 +26,7 @@ jobs:
       - name: Build image and push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: ./packages/auth
+          context: ./packages/payments
           tags: elevenhotdogs/tix.payments:latest 
           # build on feature branches, push only on main branch
           push: ${{ github.ref == 'refs/heads/main' }}
